@@ -1,13 +1,15 @@
 fs = require('fs');
-module.exports = function makeTable() {
-    function getData(name) {
-        try {
-            let data = fs.readFileSync(`../storage/${name}.txt`);
-            return JSON.parse(data);
-        } catch (e) {
-            return false
-        }
+module.exports = { makeTable, statistics, getData }
+function getData(name) {
+    try {
+        let data = fs.readFileSync(`../storage/${name}.txt`);
+        return JSON.parse(data);    
+    } catch (e) {
+        return false
     }
+}
+
+function makeTable() {
     let arr = [{
         'Monday': `1h32m2s`,
         'Tuesday': 12,
@@ -20,10 +22,10 @@ module.exports = function makeTable() {
     }]
     let array = []
     for (const day in arr[0]) {
-
         array.push(getData(day))
     }
-   array =  array.map(el => {
+
+    array = array.map(el => {
         if (el == false) {
             return '0 hours'
         }
@@ -38,10 +40,19 @@ module.exports = function makeTable() {
         return `${hours}h:${minutes}m:${sec}s`
 
     })
-
+    
     for (const day in arr[0]) {
         let i = Object.keys(arr[0]).indexOf(day)
         arr[0][day] = array[i]
     }
     console.table(arr)
+    return [arr, array]
 }
+
+
+function statistics() {
+
+    console.log(makeTable())
+}
+
+
