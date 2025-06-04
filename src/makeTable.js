@@ -10,11 +10,12 @@ function getData(name) {
 }
 
 function makeTable() {
+    // template object used for building the table
     let arr = [{
         'Monday': `1h32m2s`,
         'Tuesday': 12,
-        'Thursday': 12,
         'Wednesday': 12,
+        'Thursday': 12,
         'Friday': 12,
         'Saturday': 12,
         'Sunday': 12,
