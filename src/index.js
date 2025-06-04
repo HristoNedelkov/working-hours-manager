@@ -1,4 +1,5 @@
-fs = require('fs');
+const fs = require('fs');
+const path = require('path');
 const { rawListeners } = require('process');
 const readline = require('readline');
 const {makeTable,statistics} = require('./makeTable');
@@ -9,17 +10,19 @@ const {findPath} = require('./findPath');
 
     var time = new Date()
     var obj = { time }
-    var days = ['Monday', 'Tuesday', 'Thursday', 'Wednesday', 'Friday', 'Saturday', 'Sunday']
+    // Correct order of days starting from Sunday so we can
+    // directly use Date.getDay() which returns 0-6 with 0 being Sunday
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     let dayTime = time.getHours() <= 11 ? 'morning' : 'evening';
     
 
     const getData = (day, obj) => {
         try {
-            let data = fs.readFileSync(`../storage/${days[day - 1]}.txt`);
+            let data = fs.readFileSync(path.join(__dirname, '..', 'storage', `${days[day]}.txt`));
             return JSON.parse(data);
         } catch (e) {
 
-            fs.writeFileSync(`../storage/${days[day - 1]}.txt`, `[${JSON.stringify(obj)}]`, function (e) { console.log('Here in the CATCH!') })
+            fs.writeFileSync(path.join(__dirname, '..', 'storage', `${days[day]}.txt`), `[${JSON.stringify(obj)}]`, function (e) { console.log('Here in the CATCH!') })
             return undefined
         }
     }
@@ -37,7 +40,7 @@ const {findPath} = require('./findPath');
     | \\O/        *    *       Get         |   
     |  |       *     *   *    STARTED!    |     #______________________________#   
     |  /\\     *  *    *  *                |      You started working from:                                                                                 
-    |         *  *   *   *                |      ${time.getHours()}h:${time.getMinutes()}m:${time.getSeconds()}s on ${days[time.getDay() - 1]} ${dayTime}! 
+    |         *  *   *   *                |      ${time.getHours()}h:${time.getMinutes()}m:${time.getSeconds()}s on ${days[time.getDay()]} ${dayTime}!
     |        *  __   ---    *             |     #______________________________#
     |      <    (*)  (*)    >             |
     |              @              \\O/     |
@@ -66,7 +69,7 @@ const {findPath} = require('./findPath');
        | |        *     *   *                |     #______________________________#   
        | /\\      *  *    *  *                |      You ended work for:                                                                                 
        |         *  *   *   *                |      ${hours}h:${minutes}m:${sec}s
-       |        *  __   ---    *             |      on ${days[time.getDay() - 1]} ${dayTime}!
+       |        *  __   ---    *             |      on ${days[time.getDay()]} ${dayTime}!
        |      <    (*)  (*)    >             |     #______________________________#
        |              @             \\0/      |
        |                             |       |
@@ -85,7 +88,6 @@ const {findPath} = require('./findPath');
         rl.question('Do you want to see your weekly activity?(y/n) => ', (answer) => {
             if (answer == 'y') {
                 makeTable()
-                rl.close();
             } else {
                 console.log('You refused table of your activity. Go take your deserved rest!')
             }
@@ -100,12 +102,12 @@ const {findPath} = require('./findPath');
     console.log(`
     #______________________________#     
       Work Finished at:
-      ${time.getHours()}h:${time.getMinutes()}m:${time.getSeconds()}s on ${days[time.getDay() - 1]} ${dayTime}!
+      ${time.getHours()}h:${time.getMinutes()}m:${time.getSeconds()}s on ${days[time.getDay()]} ${dayTime}!
     #______________________________#
     `)
     previousText.push(obj)
     previousText = JSON.stringify(previousText)
-    fs.writeFileSync(`../storage/${days[time.getDay() - 1]}.txt`, previousText, function (err) { if (err) return console.log(err) })
+    fs.writeFileSync(path.join(__dirname, '..', 'storage', `${days[time.getDay()]}.txt`), previousText, function (err) { if (err) return console.log(err) })
 
 })()
 
